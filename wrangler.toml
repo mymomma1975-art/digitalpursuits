@@ -1,6 +1,5 @@
 name = "dry-voice-801cdigitalpursuits-site-lacey-75"
 compatibility_date = "2024-04-01"
-pages_build_output_dir = "./"
 
 [assets]
 directory = "./"
