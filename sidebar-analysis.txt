@@ -1,0 +1,24 @@
+Sidebar Component Analysis:
+
+SidebarContent: flex min-h-0 flex-1 flex-col gap-2 overflow-auto
+SidebarGroup: relative flex w-full min-w-0 flex-col p-2
+SidebarGroupLabel: h-8 shrink-0 px-2 text-xs font-medium
+SidebarMenu: flex w-full min-w-0 flex-col gap-1
+SidebarMenuItem: group/menu-item relative
+SidebarMenuButton (default size): h-8 text-sm, base has p-2
+
+Key issue: SidebarGroup has p-2 (8px padding all around). Combined with the DashboardLayout's py-2 override, that's still tight.
+The SidebarGroupLabel has h-8 (32px) which is fine.
+SidebarMenuButton default size is h-8 (32px) with p-2.
+
+The DashboardLayout overrides:
+- SidebarGroup: py-2 (was py-1)
+- SidebarGroupLabel: mb-1
+- SidebarMenu: gap-0.5
+- SidebarMenuButton: h-9 py-2
+
+Problem: With 7 groups and ~18 items, total height is roughly:
+7 groups * (8px padding top + 32px label + 4px mb + items * 36px + 8px padding bottom + 8px separator)
+= very tall, likely overflowing and the overflow-auto on SidebarContent may be causing visual compression.
+
+The real fix: Make sure each menu item has enough min-height and line-height, and that the SidebarContent scrolls properly.

@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1774210669017,
+      "tag": "0000_mighty_prowler",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1774211141194,
+      "tag": "0001_purple_tinkerer",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1774218053387,
+      "tag": "0002_pretty_blue_blade",
+      "breakpoints": true
+    }
+  ]
+}

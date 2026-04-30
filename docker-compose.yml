@@ -1,0 +1,82 @@
+# ============================================
+# NexusCommand - Docker Compose Stack
+# ============================================
+# Usage:
+#   1. Copy .env.example to .env and fill in your values
+#   2. Run: docker-compose up -d
+#   3. Access at http://localhost:3000
+# ============================================
+
+version: "3.9"
+
+services:
+  # --- Application ---
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nexuscommand-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:${PORT:-3000}"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=mysql://${DB_USER:-nexus}:${DB_PASSWORD:-nexuspass}@db:3306/${DB_NAME:-nexuscommand}
+      - PORT=${PORT:-3000}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - nexus-network
+
+  # --- Database ---
+  db:
+    image: mysql:8.0
+    container_name: nexuscommand-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${DB_NAME:-nexuscommand}
+      MYSQL_USER: ${DB_USER:-nexus}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-nexuspass}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - nexus-db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - nexus-network
+
+  # --- Reverse Proxy (optional, for SSL) ---
+  nginx:
+    image: nginx:alpine
+    container_name: nexuscommand-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - nexus-ssl-certs:/etc/letsencrypt
+    depends_on:
+      - app
+    networks:
+      - nexus-network
+    profiles:
+      - with-ssl
+
+volumes:
+  nexus-db-data:
+    driver: local
+  nexus-ssl-certs:
+    driver: local
+
+networks:
+  nexus-network:
+    driver: bridge

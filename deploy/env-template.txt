@@ -1,0 +1,45 @@
+# ============================================
+# NexusCommand - Environment Configuration
+# ============================================
+# Copy this file to .env and fill in your values
+# ============================================
+
+# --- App ---
+PORT=3000
+APP_PORT=3000
+NODE_ENV=production
+JWT_SECRET=your-jwt-secret-change-this-to-random-string
+
+# --- Database ---
+DB_HOST=db
+DB_PORT=3306
+DB_NAME=nexuscommand
+DB_USER=nexus
+DB_PASSWORD=nexuspass
+DB_ROOT_PASSWORD=rootpass
+DATABASE_URL=mysql://nexus:nexuspass@db:3306/nexuscommand
+
+# --- Plaid (Banking Integration) ---
+# Get keys at https://dashboard.plaid.com
+# Use 'sandbox' for testing, 'development' or 'production' for live
+PLAID_CLIENT_ID=
+PLAID_SECRET=
+PLAID_ENV=sandbox
+
+# --- Modern Treasury (Payments: ACH, Wire, RTP) ---
+# Get keys at https://app.moderntreasury.com
+MODERN_TREASURY_ORG_ID=
+MODERN_TREASURY_API_KEY=
+MODERN_TREASURY_ENV=sandbox
+
+# --- Stripe (Credit Card Processing) ---
+# Get keys at https://dashboard.stripe.com
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+
+# --- AI / LLM ---
+# For self-hosted, provide your own OpenAI key:
+OPENAI_API_KEY=
+
+# --- Domain ---
+APP_DOMAIN=localhost
