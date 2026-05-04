@@ -1,0 +1,180 @@
+{
+  "project_info": {
+    "title": "Digital Pursuits — AI-Powered Business Solutions",
+    "created": 1777928513.8813167,
+    "last_updated": 1777928811.849396,
+    "total_slides": 14
+  },
+  "slides": [
+    {
+      "id": "title",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "problem",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "introducing",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "ai_agent",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "website",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "business_mgmt",
+      "state": "edited",
+      "pageNum": 6
+    },
+    {
+      "id": "analytics",
+      "state": "edited",
+      "pageNum": 7
+    },
+    {
+      "id": "how_it_works",
+      "state": "edited",
+      "pageNum": 8
+    },
+    {
+      "id": "deployment",
+      "state": "edited",
+      "pageNum": 9
+    },
+    {
+      "id": "pricing",
+      "state": "edited",
+      "pageNum": 10
+    },
+    {
+      "id": "testimonials",
+      "state": "edited",
+      "pageNum": 11
+    },
+    {
+      "id": "security",
+      "state": "edited",
+      "pageNum": 12
+    },
+    {
+      "id": "getting_started",
+      "state": "edited",
+      "pageNum": 13
+    },
+    {
+      "id": "closing",
+      "state": "edited",
+      "pageNum": 14
+    }
+  ],
+  "outline": [
+    {
+      "id": "title",
+      "title": "Digital Pursuits — AI-Powered Business Solutions",
+      "summary": "Title slide introducing Digital Pursuits and the NexusCommand platform. Subtitle: Your 24/7 AI Assistant, Professional Website, and Complete Business Management — All in One Platform.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "problem",
+      "title": "The Problem Your Business Faces",
+      "summary": "Small businesses lose 20+ hours per week answering repetitive questions and managing scattered tools. 79% of consumers expect instant responses. Average $300-500/month on separate tools.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "introducing",
+      "title": "Introducing NexusCommand",
+      "summary": "One platform replaces 5 tools and gives you a tireless AI employee. Custom AI chatbot, professional website, CRM, invoicing, analytics — all connected.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "ai_agent",
+      "title": "Your Custom AI Agent",
+      "summary": "AI assistant trained specifically on your business answers customers in seconds. Handles unlimited conversations, learns your brand voice, smart escalation. 35% reduction in support tickets.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "website",
+      "title": "Professional Website with Embedded Intelligence",
+      "summary": "A website that actively converts visitors into customers. Custom pages, embedded AI chatbot widget, mobile-responsive, SEO-optimized, contact forms and booking built in.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "business_mgmt",
+      "title": "Complete Business Management Built In",
+      "summary": "CRM, invoicing, accounting, and payment processing in one place. Everything connects — deals close, invoices generate, payments update books automatically.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "analytics",
+      "title": "Analytics That Prove Your ROI",
+      "summary": "Real-time dashboards showing agent conversations, website visitors, health monitoring, monthly reports, and data-driven insights.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "how_it_works",
+      "title": "How It Works — 3 Simple Steps",
+      "summary": "Step 1: Tell us about your business. Step 2: We build everything in 3-7 days. Step 3: Go live and grow. Simple intake-to-launch process.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "deployment",
+      "title": "Deployment Options — Your Choice",
+      "summary": "Option A: We host everything (recommended). Option B: Deploy to your own server. Option C: Hybrid — embed our chatbot on your existing site.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "pricing",
+      "title": "Pricing — Replace 5 Tools for Less",
+      "summary": "Comparison table showing separate tools cost $249/mo vs our all-inclusive $120/mo. Save $129/month. No contracts, cancel anytime, 30-day free trial.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "testimonials",
+      "title": "What Our Clients Experience",
+      "summary": "Three testimonials showing real results: 70% questions handled by AI, 15 hours/week saved, 25% revenue increase from analytics insights.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "security",
+      "title": "Security & Reliability",
+      "summary": "SSL encryption, daily backups, 99.9% uptime, real-time health monitoring, data privacy guarantee.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "getting_started",
+      "title": "Getting Started Is Easy",
+      "summary": "Schedule free discovery call, fill intake form, we build in 3-7 days, go live with 30-day free trial. No risk, no commitment.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    },
+    {
+      "id": "closing",
+      "title": "Thank You — Let's Talk",
+      "summary": "Closing slide with contact information and call to action. Let your AI handle the repetitive work so you can focus on growing your business.",
+      "image_plan": "Use a suitable image if needed",
+      "slide_template_key": ""
+    }
+  ]
+}
