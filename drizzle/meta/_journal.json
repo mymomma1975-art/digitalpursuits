@@ -43,6 +43,13 @@
       "when": 1778206196030,
       "tag": "0005_salty_wrecking_crew",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1778268929590,
+      "tag": "0006_cooing_whirlwind",
+      "breakpoints": true
     }
   ]
 }

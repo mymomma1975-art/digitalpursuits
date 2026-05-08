@@ -2,7 +2,7 @@
 
 **Digital Pursuits | Complete Business Management + AI Assistant + Website Builder**
 
-NexusCommand is a comprehensive SaaS platform that combines CRM, accounting, payment processing, AI chatbots, website building, and real-time analytics into one unified system. Built for small businesses and entrepreneurs who want to scale without managing multiple tools.
+NexusCommand is a comprehensive SaaS platform that combines CRM, accounting, payment processing, AI chatbots, website building, real-time analytics, and an intelligent AI Copilot into one unified system. Built for small businesses and entrepreneurs who want to scale without managing multiple tools.
 
 ---
 
@@ -22,6 +22,7 @@ NexusCommand is a comprehensive SaaS platform that combines CRM, accounting, pay
 | **Analytics Dashboard** | Real-time metrics on agent performance, website traffic, customer behavior, and business KPIs. |
 | **Admin Monitor** | Master dashboard for managing multiple client instances, health checks, alerts, and system monitoring. |
 | **Email Notifications** | Real-time alerts for critical issues (agent down, website down, degraded services). |
+| **AI Copilot** | Intelligent assistant with memory retention, internet access, and platform knowledge. Helps you build agents, create websites, optimize analytics, and troubleshoot issues. |
 
 ---
 
@@ -34,9 +35,9 @@ NexusCommand is a comprehensive SaaS platform that combines CRM, accounting, pay
 | **Database** | MySQL/TiDB with Drizzle ORM |
 | **Authentication** | Manus OAuth (built-in) |
 | **Storage** | AWS S3 (file uploads, media) |
-| **LLM Integration** | Built-in LLM helpers (Claude/GPT) |
+| **LLM Integration** | Built-in LLM helpers (Claude/GPT) with internet access |
 | **Real-Time** | Socket.io ready (optional) |
-| **Testing** | Vitest with full coverage |
+| **Testing** | Vitest with full coverage (93+ tests) |
 | **Deployment** | Docker, AWS, DigitalOcean, Render, Railway compatible |
 
 ---
@@ -50,6 +51,7 @@ nexus-command/
 │   │   ├── pages/                  # Page components
 │   │   │   ├── Home.tsx
 │   │   │   ├── AdminMonitor.tsx    # Master admin dashboard
+│   │   │   ├── Copilot.tsx         # AI Copilot assistant
 │   │   │   ├── CRM.tsx
 │   │   │   ├── Invoicing.tsx
 │   │   │   ├── Accounting.tsx
@@ -68,6 +70,7 @@ nexus-command/
 ├── server/                          # Express backend
 │   ├── routers.ts                  # tRPC procedure definitions
 │   ├── db.ts                       # Database query helpers
+│   ├── copilot.ts                  # AI Copilot service with memory
 │   ├── alertNotifier.ts            # Alert notification service
 │   ├── _core/                      # Framework internals
 │   │   ├── index.ts                # Express server setup
@@ -206,6 +209,40 @@ Key tables:
 - **systemHealth** — Server health monitoring
 - **alerts** — System alerts and notifications
 - **notificationPreferences** — User alert settings
+- **copilotConversations** — AI Copilot chat sessions
+- **copilotMessages** — Individual copilot messages with memory
+- **copilotKnowledgeBase** — Platform documentation for copilot
+- **copilotSuggestions** — AI-generated improvement suggestions
+
+---
+
+## 🤖 Using the AI Copilot
+
+The AI Copilot is your intelligent assistant available in the sidebar. It helps you:
+
+### Features
+
+- **Memory Retention** — Remembers previous messages in each conversation (last 5 messages)
+- **Internet Access** — Can search the web for additional information
+- **Platform Knowledge** — Trained on all NexusCommand documentation
+- **Context Awareness** — Knows what page you're on and what you're building
+- **Multiple Topics** — Specialized help for agent building, website creation, analytics, and troubleshooting
+
+### How to Use
+
+1. Click the **Copilot** icon in the sidebar
+2. Select a topic (Agent Building, Website Creation, Analytics, Troubleshooting, or General)
+3. Ask your question
+4. The copilot will respond with actionable advice
+5. Continue the conversation — it remembers context
+
+### Example Questions
+
+- "How do I build an AI agent that answers customer support questions?"
+- "What training data should I provide to make my agent more effective?"
+- "How do I embed my website chatbot on my site?"
+- "Why is my agent's response time slow?"
+- "How do I optimize my website for better SEO?"
 
 ---
 
@@ -345,7 +382,7 @@ docker run -p 3000:3000 \
 
 | Plan | Price | Includes |
 |------|-------|----------|
-| **Starter** | $120/month | 1 user, AI agent, website, CRM, invoicing, analytics |
+| **Starter** | $120/month | 1 user, AI agent, website, CRM, invoicing, analytics, copilot |
 | **Growth** | $199/month | Up to 5 users, all features, priority support |
 | **Enterprise** | $349/month | Unlimited users, white-label, custom AI training, dedicated support |
 
@@ -355,7 +392,7 @@ docker run -p 3000:3000 \
 
 ## 🧪 Testing
 
-Run the full test suite:
+Run the full test suite (93+ tests):
 
 ```bash
 pnpm test
@@ -370,7 +407,7 @@ pnpm test --watch
 Run tests for a specific file:
 
 ```bash
-pnpm test server/admin.test.ts
+pnpm test server/copilot.test.ts
 ```
 
 ---

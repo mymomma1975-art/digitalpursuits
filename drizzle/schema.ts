@@ -509,3 +509,52 @@ export const copilotSuggestions = mysqlTable("copilot_suggestions", {
   implementedAt: timestamp("implementedAt"),
 });
 export type CopilotSuggestion = typeof copilotSuggestions.$inferSelect;
+
+
+// ─── Pricing Tiers with Limits ─────────────────────────────────────────────
+/**
+ * Pricing tiers define subscription plans with agent/website limits
+ */
+export const pricingTiers = mysqlTable("pricing_tiers", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 64 }).notNull().unique(), // "Starter", "Growth", "Enterprise"
+  monthlyPrice: decimal("monthlyPrice", { precision: 8, scale: 2 }).notNull(),
+  maxAgents: int("maxAgents").notNull(), // 1, 5, -1 for unlimited
+  maxWebsites: int("maxWebsites").notNull(), // 1, 3, -1 for unlimited
+  maxUsers: int("maxUsers").notNull(), // 1, 5, -1 for unlimited
+  features: text("features"), // JSON array of feature descriptions
+  stripePriceId: varchar("stripePriceId", { length: 256 }),
+  isActive: boolean("isActive").default(true),
+  description: text("description"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type PricingTier = typeof pricingTiers.$inferSelect;
+export type InsertPricingTier = typeof pricingTiers.$inferInsert;
+
+// ─── Subscription Invoices ─────────────────────────────────────────────────
+/**
+ * Subscription invoices for billing clients monthly
+ */
+export const subscriptionInvoices = mysqlTable("subscription_invoices", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  subscriptionId: int("subscriptionId"),
+  pricingTierId: int("pricingTierId"),
+  invoiceNumber: varchar("invoiceNumber", { length: 64 }).notNull().unique(),
+  amount: decimal("amount", { precision: 12, scale: 2 }).notNull(),
+  currency: varchar("currency", { length: 3 }).default("USD"),
+  status: mysqlEnum("status", ["draft", "sent", "paid", "overdue", "cancelled"]).default("draft"),
+  billingPeriodStart: timestamp("billingPeriodStart").notNull(),
+  billingPeriodEnd: timestamp("billingPeriodEnd").notNull(),
+  dueDate: timestamp("dueDate"),
+  paidDate: timestamp("paidDate"),
+  description: text("description"),
+  lineItems: text("lineItems"), // JSON array of line items
+  pdfUrl: varchar("pdfUrl", { length: 512 }),
+  generatedByAI: boolean("generatedByAI").default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type SubscriptionInvoice = typeof subscriptionInvoices.$inferSelect;
+export type InsertSubscriptionInvoice = typeof subscriptionInvoices.$inferInsert;

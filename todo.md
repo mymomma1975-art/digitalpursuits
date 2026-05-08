@@ -94,6 +94,7 @@
 - [x] Write complete NexusCommand user guide (all features, agents, websites, analytics)
 - [x] Create client intake form for intended workflow and deployment preferences
 - [x] Create deployment/hosting infographic (visual diagram)
+- [x] Update README with AI Copilot feature and usage instructions
 
 ## Phase 14: AI Copilot for Platform Assistance
 - [x] Create copilot conversation schema and knowledge base tables
@@ -104,4 +105,12 @@
 - [x] Add copilot help features (agent building, website creation, analytics)
 - [x] Write tests for copilot functionality (all 86 tests passing)
 - [x] Add conversation memory retention (recall previous messages in conversation) — already built in, retrieves last 5 messages per conversation
+- [x] Push to GitHub (commit: 579aae4 with AI Copilot, Admin Monitor, and all tests)
+
+## Phase 15: Pricing Tiers with Limits & AI Invoice Generation
+- [x] Update pricing schema to include agent/website limits per tier
+- [x] Add AI invoice generation feature to Copilot (invoiceGenerator.ts created)
+- [ ] Update pricing display UI to show limits clearly
+- [ ] Build invoice generation interface in Copilot
+- [ ] Write tests for pricing and invoice features
 - [ ] Push to GitHub
