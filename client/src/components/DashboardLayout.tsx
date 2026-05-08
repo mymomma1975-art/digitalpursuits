@@ -32,7 +32,7 @@ import {
   Bot, Brain, MessageSquare,
   Globe, BarChart3, Receipt,
   LogOut, PanelLeft, Zap, Settings, PieChart,
-  Package, ShoppingBag,
+  Package, ShoppingBag, Monitor, Sparkles,
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
@@ -83,6 +83,13 @@ const menuGroups = [
     items: [
       { icon: Zap, label: "Agents", path: "/agents" },
       { icon: Globe, label: "Websites", path: "/websites" },
+    ],
+  },
+  {
+    label: "Admin",
+    items: [
+      { icon: Monitor, label: "Admin Monitor", path: "/admin-monitor" },
+      { icon: Sparkles, label: "AI Copilot", path: "/copilot" },
     ],
   },
   {

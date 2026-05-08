@@ -371,3 +371,141 @@ export const stripeSubscriptions = mysqlTable("stripe_subscriptions", {
 });
 
 export type StripeSubscription = typeof stripeSubscriptions.$inferSelect;
+
+// ─── System Health Checks ──────────────────────────────────────────────────
+export const systemHealthChecks = mysqlTable("system_health_checks", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  entityType: mysqlEnum("entityType", ["agent", "website"]).notNull(),
+  entityId: int("entityId").notNull(),
+  status: mysqlEnum("status", ["healthy", "degraded", "down"]).default("healthy").notNull(),
+  responseTimeMs: int("responseTimeMs"),
+  errorMessage: text("errorMessage"),
+  checkedAt: timestamp("checkedAt").defaultNow().notNull(),
+});
+
+export type SystemHealthCheck = typeof systemHealthChecks.$inferSelect;
+
+// ─── System Alerts ─────────────────────────────────────────────────────────
+export const systemAlerts = mysqlTable("system_alerts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  entityType: mysqlEnum("entityType", ["agent", "website", "billing", "system"]).notNull(),
+  entityId: int("entityId"),
+  severity: mysqlEnum("severity", ["info", "warning", "critical"]).default("info").notNull(),
+  title: varchar("title", { length: 256 }).notNull(),
+  message: text("message"),
+  isRead: boolean("isRead").default(false),
+  resolvedAt: timestamp("resolvedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SystemAlert = typeof systemAlerts.$inferSelect;
+
+// ─── Notification Preferences ──────────────────────────────────────────────
+export const notificationPreferences = mysqlTable("notification_preferences", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  emailEnabled: boolean("emailEnabled").default(true).notNull(),
+  /** Minimum severity to trigger notification: info, warning, critical */
+  minSeverity: mysqlEnum("minSeverity", ["info", "warning", "critical"]).default("warning").notNull(),
+  /** Cooldown in minutes between notifications for the same entity */
+  cooldownMinutes: int("cooldownMinutes").default(15).notNull(),
+  lastNotifiedAt: timestamp("lastNotifiedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type NotificationPreference = typeof notificationPreferences.$inferSelect;
+
+// ─── Notification Log ──────────────────────────────────────────────────────
+export const notificationLog = mysqlTable("notification_log", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  alertId: int("alertId"),
+  channel: mysqlEnum("channel", ["push", "email"]).default("push").notNull(),
+  title: varchar("title", { length: 256 }).notNull(),
+  message: text("message"),
+  sentAt: timestamp("sentAt").defaultNow().notNull(),
+  delivered: boolean("delivered").default(false),
+});
+
+export type NotificationLogEntry = typeof notificationLog.$inferSelect;
+
+// ─── AI Copilot ────────────────────────────────────────────────────────────
+/**
+ * Copilot conversations - stores chat history between user and AI assistant
+ */
+export const copilotConversations = mysqlTable("copilot_conversations", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  title: varchar("title", { length: 256 }).notNull(),
+  topic: mysqlEnum("topic", [
+    "agent_building",
+    "website_creation",
+    "analytics",
+    "troubleshooting",
+    "general",
+  ]).default("general").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type CopilotConversation = typeof copilotConversations.$inferSelect;
+
+/**
+ * Copilot messages - individual messages in a conversation
+ */
+export const copilotMessages = mysqlTable("copilot_messages", {
+  id: int("id").autoincrement().primaryKey(),
+  conversationId: int("conversationId").notNull(),
+  role: mysqlEnum("role", ["user", "assistant"]).notNull(),
+  content: text("content").notNull(),
+  /** Optional: URLs accessed during this response for web search */
+  sourceUrls: text("sourceUrls"),
+  /** Optional: platform context (current page, client data, etc.) */
+  context: text("context"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type CopilotMessage = typeof copilotMessages.$inferSelect;
+
+/**
+ * Copilot knowledge base - embedded platform documentation and guides
+ */
+export const copilotKnowledgeBase = mysqlTable("copilot_knowledge_base", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 256 }).notNull(),
+  category: mysqlEnum("category", [
+    "agent_building",
+    "website_creation",
+    "analytics",
+    "deployment",
+    "troubleshooting",
+    "api_reference",
+    "best_practices",
+  ]).notNull(),
+  content: text("content").notNull(),
+  /** Embedding vector for semantic search (stored as JSON string) */
+  embedding: text("embedding"),
+  sourceUrl: varchar("sourceUrl", { length: 512 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type CopilotKnowledgeEntry = typeof copilotKnowledgeBase.$inferSelect;
+
+/**
+ * Copilot suggestions - AI-generated suggestions for improvement
+ */
+export const copilotSuggestions = mysqlTable("copilot_suggestions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  entityType: mysqlEnum("entityType", ["agent", "website", "analytics"]).notNull(),
+  entityId: int("entityId"),
+  title: varchar("title", { length: 256 }).notNull(),
+  description: text("description").notNull(),
+  suggestedAction: text("suggestedAction"),
+  priority: mysqlEnum("priority", ["low", "medium", "high"]).default("medium").notNull(),
+  isImplemented: boolean("isImplemented").default(false),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  implementedAt: timestamp("implementedAt"),
+});
+export type CopilotSuggestion = typeof copilotSuggestions.$inferSelect;

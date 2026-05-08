@@ -11,6 +11,7 @@ import {
   clientWebsites,
   analyticsEvents, clientBilling,
   stripeCustomers, stripeProducts, stripeOrders, stripeSubscriptions,
+  systemHealthChecks, systemAlerts,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -623,4 +624,177 @@ export async function updateStripeSubscription(stripeSubId: string, data: any) {
   const db = await getDb();
   if (!db) throw new Error("DB not available");
   await db.update(stripeSubscriptions).set(data).where(eq(stripeSubscriptions.stripeSubscriptionId, stripeSubId));
+}
+
+
+// ─── Admin Dashboard: System Health ─────────────────────────────────────────
+
+export async function logHealthCheck(data: {
+  userId: number;
+  entityType: "agent" | "website";
+  entityId: number;
+  status: "healthy" | "degraded" | "down";
+  responseTimeMs?: number;
+  errorMessage?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.insert(systemHealthChecks).values(data);
+}
+
+export async function getLatestHealthChecks(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  // Get the most recent health check for each entity
+  return db.select().from(systemHealthChecks)
+    .where(eq(systemHealthChecks.userId, userId))
+    .orderBy(desc(systemHealthChecks.checkedAt))
+    .limit(100);
+}
+
+export async function getHealthHistory(userId: number, entityType: "agent" | "website", entityId: number, limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(systemHealthChecks)
+    .where(and(
+      eq(systemHealthChecks.userId, userId),
+      eq(systemHealthChecks.entityType, entityType),
+      eq(systemHealthChecks.entityId, entityId),
+    ))
+    .orderBy(desc(systemHealthChecks.checkedAt))
+    .limit(limit);
+}
+
+// ─── Admin Dashboard: Alerts ────────────────────────────────────────────────
+
+export async function createAlert(data: {
+  userId: number;
+  entityType: "agent" | "website" | "billing" | "system";
+  entityId?: number;
+  severity: "info" | "warning" | "critical";
+  title: string;
+  message?: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  const result = await db.insert(systemAlerts).values(data);
+  return result[0].insertId;
+}
+
+export async function getAlerts(userId: number, unreadOnly = false, limit = 50) {
+  const db = await getDb();
+  if (!db) return [];
+  const conditions: any[] = [eq(systemAlerts.userId, userId)];
+  if (unreadOnly) conditions.push(eq(systemAlerts.isRead, false));
+  return db.select().from(systemAlerts)
+    .where(and(...conditions))
+    .orderBy(desc(systemAlerts.createdAt))
+    .limit(limit);
+}
+
+export async function markAlertRead(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.update(systemAlerts).set({ isRead: true }).where(and(eq(systemAlerts.id, id), eq(systemAlerts.userId, userId)));
+}
+
+export async function resolveAlert(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.update(systemAlerts).set({ isRead: true, resolvedAt: new Date() }).where(and(eq(systemAlerts.id, id), eq(systemAlerts.userId, userId)));
+}
+
+export async function markAllAlertsRead(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  await db.update(systemAlerts).set({ isRead: true }).where(eq(systemAlerts.userId, userId));
+}
+
+// ─── Admin Dashboard: Master Overview ───────────────────────────────────────
+
+export async function getAdminOverview(userId: number) {
+  const db = await getDb();
+  if (!db) return {
+    totalClients: 0, activeAgents: 0, publishedWebsites: 0,
+    totalMRR: "0.00", totalInteractions: 0, totalVisits: 0,
+    healthyEntities: 0, degradedEntities: 0, downEntities: 0,
+    unreadAlerts: 0,
+  };
+
+  const [agentStats] = await db.select({
+    total: sql<number>`count(*)`,
+    active: sql<number>`SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END)`,
+    interactions: sql<number>`COALESCE(SUM(totalInteractions), 0)`,
+  }).from(clientAgents).where(eq(clientAgents.userId, userId));
+
+  const [websiteStats] = await db.select({
+    total: sql<number>`count(*)`,
+    published: sql<number>`SUM(CASE WHEN status = 'published' THEN 1 ELSE 0 END)`,
+    visits: sql<number>`COALESCE(SUM(totalVisits), 0)`,
+  }).from(clientWebsites).where(eq(clientWebsites.userId, userId));
+
+  const [billingStats] = await db.select({
+    totalMRR: sql<string>`COALESCE(SUM(CASE WHEN status = 'active' THEN monthlyAmount ELSE 0 END), 0)`,
+    totalClients: sql<number>`COUNT(DISTINCT clientName)`,
+  }).from(clientBilling).where(eq(clientBilling.userId, userId));
+
+  const [alertStats] = await db.select({
+    unread: sql<number>`SUM(CASE WHEN isRead = false THEN 1 ELSE 0 END)`,
+  }).from(systemAlerts).where(eq(systemAlerts.userId, userId));
+
+  return {
+    totalClients: billingStats?.totalClients ?? 0,
+    activeAgents: agentStats?.active ?? 0,
+    totalAgents: agentStats?.total ?? 0,
+    publishedWebsites: websiteStats?.published ?? 0,
+    totalWebsites: websiteStats?.total ?? 0,
+    totalMRR: billingStats?.totalMRR ?? "0.00",
+    totalInteractions: agentStats?.interactions ?? 0,
+    totalVisits: websiteStats?.visits ?? 0,
+    unreadAlerts: alertStats?.unread ?? 0,
+  };
+}
+
+export async function getClientOverviewList(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  // Get all agents with their client info
+  const agentsList = await db.select().from(clientAgents).where(eq(clientAgents.userId, userId));
+  const websitesList = await db.select().from(clientWebsites).where(eq(clientWebsites.userId, userId));
+  const billings = await db.select().from(clientBilling).where(eq(clientBilling.userId, userId));
+
+  // Group by client name
+  const clientMap: Record<string, {
+    clientName: string;
+    agents: typeof agentsList;
+    websites: typeof websitesList;
+    billings: typeof billings;
+    totalMRR: number;
+    totalInteractions: number;
+    totalVisits: number;
+  }> = {};
+
+  for (const agent of agentsList) {
+    const name = agent.clientName || "Unassigned";
+    if (!clientMap[name]) clientMap[name] = { clientName: name, agents: [], websites: [], billings: [], totalMRR: 0, totalInteractions: 0, totalVisits: 0 };
+    clientMap[name].agents.push(agent);
+    clientMap[name].totalInteractions += agent.totalInteractions || 0;
+  }
+
+  for (const site of websitesList) {
+    const name = site.clientName || "Unassigned";
+    if (!clientMap[name]) clientMap[name] = { clientName: name, agents: [], websites: [], billings: [], totalMRR: 0, totalInteractions: 0, totalVisits: 0 };
+    clientMap[name].websites.push(site);
+    clientMap[name].totalVisits += site.totalVisits || 0;
+  }
+
+  for (const bill of billings) {
+    const name = bill.clientName;
+    if (!clientMap[name]) clientMap[name] = { clientName: name, agents: [], websites: [], billings: [], totalMRR: 0, totalInteractions: 0, totalVisits: 0 };
+    clientMap[name].billings.push(bill);
+    if (bill.status === "active") clientMap[name].totalMRR += Number(bill.monthlyAmount);
+  }
+
+  return Object.values(clientMap).sort((a, b) => b.totalMRR - a.totalMRR);
 }

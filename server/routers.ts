@@ -863,6 +863,152 @@ const stripeRouter = router({
     }),
 });
 
+/// ─── Admin Monitor Router ───────────────────────────────────────────────────
+import { sendAlertNotification, getNotificationPrefs, updateNotificationPrefs } from "./alertNotifier";
+
+const adminRouter = router({
+  overview: protectedProcedure.query(async ({ ctx }) => {
+    return db.getAdminOverview(ctx.user.id);
+  }),
+  clients: protectedProcedure.query(async ({ ctx }) => {
+    return db.getClientOverviewList(ctx.user.id);
+  }),
+  healthChecks: protectedProcedure.query(async ({ ctx }) => {
+    return db.getLatestHealthChecks(ctx.user.id);
+  }),
+  healthHistory: protectedProcedure
+    .input(z.object({
+      entityType: z.enum(["agent", "website"]),
+      entityId: z.number(),
+    }))
+    .query(async ({ ctx, input }) => {
+      return db.getHealthHistory(ctx.user.id, input.entityType, input.entityId);
+    }),
+  logHealth: protectedProcedure
+    .input(z.object({
+      entityType: z.enum(["agent", "website"]),
+      entityId: z.number(),
+      status: z.enum(["healthy", "degraded", "down"]),
+      responseTimeMs: z.number().optional(),
+      errorMessage: z.string().optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await db.logHealthCheck({ ...input, userId: ctx.user.id });
+      // Auto-create alert and send notification if status is degraded or down
+      if (input.status === "down") {
+        const alertId = await db.createAlert({
+          userId: ctx.user.id,
+          entityType: input.entityType,
+          entityId: input.entityId,
+          severity: "critical",
+          title: `${input.entityType === "agent" ? "Agent" : "Website"} is DOWN`,
+          message: input.errorMessage || "Entity is not responding",
+        });
+        // Send real-time notification
+        await sendAlertNotification({
+          userId: ctx.user.id,
+          alertId: typeof alertId === "number" ? alertId : undefined,
+          entityType: input.entityType,
+          entityId: input.entityId,
+          severity: "critical",
+          title: `${input.entityType === "agent" ? "Agent" : "Website"} is DOWN`,
+          message: input.errorMessage || "Entity is not responding",
+        });
+      } else if (input.status === "degraded") {
+        const alertId = await db.createAlert({
+          userId: ctx.user.id,
+          entityType: input.entityType,
+          entityId: input.entityId,
+          severity: "warning",
+          title: `${input.entityType === "agent" ? "Agent" : "Website"} is degraded`,
+          message: input.errorMessage || "Slow response times detected",
+        });
+        // Send real-time notification
+        await sendAlertNotification({
+          userId: ctx.user.id,
+          alertId: typeof alertId === "number" ? alertId : undefined,
+          entityType: input.entityType,
+          entityId: input.entityId,
+          severity: "warning",
+          title: `${input.entityType === "agent" ? "Agent" : "Website"} is degraded`,
+          message: input.errorMessage || "Slow response times detected",
+        });
+      }
+      return { success: true };
+    }),
+  alerts: protectedProcedure
+    .input(z.object({ unreadOnly: z.boolean().optional() }).optional())
+    .query(async ({ ctx, input }) => {
+      return db.getAlerts(ctx.user.id, input?.unreadOnly);
+    }),
+  markAlertRead: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await db.markAlertRead(input.id, ctx.user.id);
+      return { success: true };
+    }),
+  resolveAlert: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      await db.resolveAlert(input.id, ctx.user.id);
+      return { success: true };
+    }),
+  markAllAlertsRead: protectedProcedure.mutation(async ({ ctx }) => {
+    await db.markAllAlertsRead(ctx.user.id);
+    return { success: true };
+  }),
+  // Notification preferences
+  getNotificationPrefs: protectedProcedure.query(async ({ ctx }) => {
+    return getNotificationPrefs(ctx.user.id);
+  }),
+  updateNotificationPrefs: protectedProcedure
+    .input(z.object({
+      emailEnabled: z.boolean().optional(),
+      minSeverity: z.enum(["info", "warning", "critical"]).optional(),
+      cooldownMinutes: z.number().min(1).max(1440).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      await updateNotificationPrefs(ctx.user.id, input);
+      return { success: true };
+    }),
+});
+
+// ─── Copilot Router ────────────────────────────────────────────────────────
+import { chatWithCopilot, getCopilotSuggestions, markSuggestionImplemented } from "./copilot";
+
+const copilotRouter = router({
+  chat: protectedProcedure
+    .input(z.object({
+      conversationId: z.number().optional(),
+      message: z.string().min(1).max(2000),
+      topic: z.enum(["agent_building", "website_creation", "analytics", "troubleshooting", "general"]).optional(),
+      context: z.object({
+        currentPage: z.string().optional(),
+        agentId: z.number().optional(),
+        websiteId: z.number().optional(),
+        clientData: z.record(z.string(), z.unknown()).optional(),
+      }).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      return await chatWithCopilot({
+        userId: ctx.user.id,
+        ...input,
+      });
+    }),
+  
+  suggestions: protectedProcedure
+    .query(async ({ ctx }) => {
+      return await getCopilotSuggestions(ctx.user.id);
+    }),
+  
+  markSuggestionDone: protectedProcedure
+    .input(z.object({ suggestionId: z.number() }))
+    .mutation(async ({ input }) => {
+      await markSuggestionImplemented(input.suggestionId);
+      return { success: true };
+    }),
+});
+
 // ─── Main Router ────────────────────────────────────────────────────────────
 export const appRouter = router({
   system: systemRouter,
@@ -882,6 +1028,7 @@ export const appRouter = router({
   analytics: analyticsRouter,
   billing: billingRouter,
   stripe: stripeRouter,
+  admin: adminRouter,
+  copilot: copilotRouter,
 });
-
 export type AppRouter = typeof appRouter;

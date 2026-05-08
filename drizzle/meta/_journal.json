@@ -22,6 +22,27 @@
       "when": 1774218053387,
       "tag": "0002_pretty_blue_blade",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1777925115823,
+      "tag": "0003_pale_justice",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1777926070698,
+      "tag": "0004_youthful_rafael_vega",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1778206196030,
+      "tag": "0005_salty_wrecking_crew",
+      "breakpoints": true
     }
   ]
 }

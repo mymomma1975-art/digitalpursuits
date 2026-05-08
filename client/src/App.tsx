@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
+import Copilot from "./pages/Copilot";
 import Contacts from "./pages/Contacts";
 import Pipelines from "./pages/Pipelines";
 import Deals from "./pages/Deals";
@@ -23,11 +24,13 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Products from "./pages/Products";
 import Orders from "./pages/Orders";
+import AdminMonitor from "./pages/AdminMonitor";
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/copilot"} component={Copilot} />
       {/* CRM */}
       <Route path={"/contacts"} component={Contacts} />
       <Route path={"/pipelines"} component={Pipelines} />
@@ -49,6 +52,8 @@ function Router() {
       {/* Stripe */}
       <Route path={"/products"} component={Products} />
       <Route path={"/orders"} component={Orders} />
+      {/* Admin */}
+      <Route path={"/admin-monitor"} component={AdminMonitor} />
       {/* Business */}
       <Route path={"/analytics"} component={Analytics} />
       <Route path={"/billing"} component={Billing} />
