@@ -248,23 +248,37 @@ The AI Copilot is your intelligent assistant available in the sidebar. It helps 
 
 ## 🤖 Building an AI Agent
 
+Your agents are powered by advanced LLM technology with two key capabilities:
+
+**Memory Retention** — Agents remember previous conversations with customers and learn from interactions over time. Enable this for customer support, sales, and service agents.
+
+**Internet Access** — Agents can search the web for real-time information. Enable this for agents that need current data (weather, stocks, news, etc.).
+
+### Building Your Agent
+
 1. **Create agent in Admin Panel:**
    - Name, description, and personality
    - Upload training data (FAQs, documents, URLs)
    - Configure response behavior and escalation
 
-2. **Train on your data:**
+2. **Enable Memory & Internet (Optional):**
+   - Enable conversation memory to remember customers
+   - Enable internet access for real-time information
+   - See [Agent Memory & Internet Access Guide](./docs/guides/AGENT-MEMORY-AND-INTERNET.md)
+
+3. **Train on your data:**
    - Upload PDF, Word, or text files
    - Paste FAQ content directly
    - Provide URLs for web scraping
    - The AI learns from all provided data
 
-3. **Test and refine:**
+4. **Test and refine:**
    - Chat with your agent in the preview
    - Adjust personality and responses
    - Add more training data as needed
+   - Monitor learning over time
 
-4. **Deploy:**
+5. **Deploy:**
    - Get embed code for your website
    - Share public link with customers
    - Monitor performance in Analytics
@@ -321,14 +335,39 @@ Each client instance has its own analytics dashboard showing:
 
 ## 🚢 Deployment
 
-### Option 1: Deploy to Our Servers (Recommended)
+### Option 1: Manual Client Deployment on Manus (Recommended for First Clients)
 
-We host everything. You just manage clients and billing.
+For your first paying clients, deploy each instance manually on the Manus platform. This gives you full control and makes troubleshooting easier.
 
-```bash
-# We handle deployment
-# You manage via Admin Monitor
-```
+**Quick Start:**
+
+1. Client fills out intake form and selects pricing tier
+2. Clone the `saas-platform` branch from GitHub
+3. Configure environment variables (database, Stripe keys, API keys)
+4. Deploy to Manus platform
+5. Connect client's custom domain
+6. Create client admin account
+7. Set up Stripe billing
+
+**See [README-DEPLOYMENT.md](./README-DEPLOYMENT.md) for complete step-by-step guide.**
+
+**Benefits:**
+- Full control over each client instance
+- Easy troubleshooting and support
+- Monitor all clients from Admin Monitor
+- Gradual scaling (add clients one at a time)
+- Understand your costs and margins
+
+**Costs per client:**
+- Manus hosting: $10-20/month
+- Database: $5-15/month
+- API costs (LLM, etc.): $5-10/month
+- **Total: ~$30-45/month per client**
+
+**Your margins:**
+- Starter ($120/month) - $40 = **$80 profit/month per client**
+- Growth ($199/month) - $40 = **$159 profit/month per client**
+- Enterprise ($349/month) - $40 = **$309 profit/month per client**
 
 ### Option 2: Deploy to AWS
 
@@ -368,11 +407,31 @@ docker run -p 3000:3000 \
 
 ---
 
+## 👥 Client Onboarding
+
+When you get your first paying client, follow this workflow:
+
+1. **Client Signs Up** — They fill out the intake form and select a pricing tier
+2. **Create Instance** — Clone the codebase and configure for their business
+3. **Deploy on Manus** — Get a live URL in minutes
+4. **Connect Domain** — Client points their domain to your instance
+5. **Create Account** — Set up their admin account
+6. **Set Up Billing** — Configure Stripe subscription
+7. **Onboard & Train** — Help them build their first agent and website
+8. **Go Live** — Launch and monitor
+
+**See [README-DEPLOYMENT.md](./README-DEPLOYMENT.md) for complete client onboarding checklist.**
+
+---
+
 ## 📚 Documentation
 
 - **[Complete User Guide](./docs/guides/NexusCommand-Complete-User-Guide.md)** — All features and how to use them
 - **[Client Intake Form](./docs/guides/NexusCommand-Client-Intake-Form.md)** — Gather client requirements
 - **[Deployment Guide](./docs/guides/NexusCommand-Deployment-Guide.md)** — Step-by-step deployment instructions
+- **[Manual Deployment Guide](./README-DEPLOYMENT.md)** — Deploy clients on Manus platform with custom domains
+- **[Agent Memory & Internet Access Guide](./docs/guides/AGENT-MEMORY-AND-INTERNET.md)** — Build smarter agents with memory retention and real-time web search
+- **[Client Management & Troubleshooting Guide](./docs/guides/CLIENT-MANAGEMENT-TROUBLESHOOTING.md)** — Manage clients, troubleshoot issues, and scale your business
 - **[Client Presentation](./docs/presentations/nexuscommand-client-presentation/)** — 14-slide sales deck
 - **[Infographics](./docs/guides/)** — Architecture and workflow diagrams
 
